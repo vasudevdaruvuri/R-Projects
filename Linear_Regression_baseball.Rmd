@@ -1,0 +1,159 @@
+---
+title: "Linear Regression using 30 Major League Base ball Teams ( Inspired by Money Ball)"
+date: "10/30/2014"
+output:
+  html_document:
+    theme: cerulean
+---
+
+<!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
+
+<!-- Enter the code required to load your data in the space below. The data will be loaded but the line of code won't show up in your write up (echo=FALSE) in order to save space-->
+```{r echo=FALSE}
+load(url("http://www.openintro.org/stat/data/mlb11.RData"))
+
+```
+
+<!-- In the remainder of the document, add R code chunks as needed -->
+
+### Introduction:
+The movie Moneyball focuses on the "quest for the secret of success in baseball". It follows a low-budget team, the Oakland Athletics, who believed that underused statistics, such as a player's ability to get on base, better predict the ability to score runs than typical statistics like home runs, RBIs (runs batted in), and
+batting average. Obtaining players who excelled in these underused statistics turned out to be much more affordable for the team.  
+
+In this exercise I will be looking at data from all 30 Major League Baseball teams and examining the linear relationship between runs scored in a season and a number of other player statistics. aim will be to summarize these relationships both graphically and numerically in order to find which variable, if any, helps best predict a team's runs scored in a season.
+
+### Data:
+
+Data is collected for the 2011 season.
+```{r}
+names(mlb11)
+```
+
+### Exploratory data analysis:
+
+```{r}
+attach(mlb11)
+plot(at_bats,runs) ## we use scatterplot to observe correlation 
+
+" Relation ship appears to be linear but not completely. we need to find correlation coefficient to determine how positively correlated.The relationship is positive, linear, and moderately strong. One of the potential outliers is a team with approximately 5520 at bats."
+```
+
+```{r}
+##Correlation
+ cor(runs,at_bats)
+##Summary of runs
+summary(runs)
+boxplot(runs) #spread of runs
+##Summary of at_bats
+summary(at_bats) 
+boxplot(at_bats) #spread of at_bats
+##identifying lowest least sum of squares possible through plot_ss
+plot_ss(x = at_bats, y = runs, showSquares = TRUE)
+## This is a very cumbersome process so we can use direct lm model 
+```
+### Inference:
+```{r}
+## linear model in between at_bats and runs
+m1 <- lm(runs ~ at_bats, data = mlb11)
+summary(m1)
+```
+"
+From this summary we can write least square regression line for linear model
+       y = -2789.2429 + 0.6305 atbats
+
+Multiple R squared value: The R2 value represents the proportion of variability in the response variable that is explained by the explanatory variable. For this model,37.3% of the variability in runs is explained by at_bats.
+"
+### Prediction and Prediction Errors
+```{r}
+plot(m1)
+abline(m1) # this function plots a line based on its slope and intercept
+
+"
+When predictions are made for values of x that are beyond the range of the observed data, it is referred to as extrapolation. However, predictions made within the range of the data are more reliable. They're also used to compute the residuals.
+"
+```
+
+```{r}
+# caluculating residual at at_bats = 5579
+ yobs <- mlb11[at_bats == "5579",2]
+ y = -2789.2429 + 0.6305 * 5579
+ e <- yobs - y 
+# from the result, this is overestimate or overprediciton by 15.31
+#
+```
+##Model Diagnostics
+```{r}
+#Random distribution of residuals Check
+plot(m1$residuals ~ mlb11$at_bats)
+abline(h = 0, lty = 3) # adds a horizontal dashed line at y = 0
+
+# Normality Check ->
+hist(m1$residuals)
+qqnorm(m1$residuals)
+qqline(m1$residuals) # adds diagonal line to the normal prob plot
+"
+The residuals are failry symmetric, with only a slightly longer tail on the right, hence it would be appropriate to deem the the normal distribution of residuals condition met.
+"
+## constant variability
+
+```
+
+
+### Conclusion:
+
+As Rsquared value is less. we can say  the model is not good fit between runs and at_bats.
+
+Lets verify the relation ships between runs and other possible variables.
+Relation between runs and homeruns
+
+```{r}
+hm<-lm(runs ~ homeruns)
+summary(hm)
+#Random distribution of residuals Check
+plot(hm$residuals ~ homeruns)
+abline(h = 0, lty = 3) # adds a horizontal dashed line at y = 0
+# Normality Check ->
+hist(hm$residuals)
+qqnorm(hm$residuals)
+qqline(hm$residuals) # adds diagonal line to the normal prob plot
+
+## constant variability
+```
+
+Relation between runs and batting average(bat_avg)
+```{r}
+ba<-lm(runs ~ bat_avg)
+summary(ba)
+#Random distribution of residuals Check
+plot(ba$residuals ~ bat_avg)
+abline(h = 0, lty = 3) # adds a horizontal dashed line at y = 0
+# Normality Check ->
+hist(ba$residuals)
+qqnorm(ba$residuals)
+qqline(ba$residuals) # adds diagonal line to the normal prob plot
+
+## constant variability
+```
+Relation between runs and wins
+```{r}
+wn<-lm(runs ~ wins)
+summary(wn)
+#Random distribution of residuals Check
+plot(wn$residuals ~ wins)
+abline(h = 0, lty = 3) # adds a horizontal dashed line at y = 0
+# Normality Check ->
+hist(wn$residuals)
+qqnorm(wn$residuals)
+qqline(wn$residuals) # adds diagonal line to the normal prob plot
+
+## constant variability
+```
+###Rsquared value for predition of runs with different explonatory variables
+"
+at_bats : 0.373
+home_runs : 0.627
+batting average : 0.656
+wins :0.361
+
+The best fit could be possible with batting average .
+"
