@@ -1,9 +1,11 @@
 ---
-title: "Linear Regression using 30 Major League Base ball Teams ( Inspired by Money Ball)"
-date: "10/30/2014"
+title: Linear Regression using 30 Major League Base ball Teams ( Inspired by Money
+  Ball)
 output:
+  pdf_document: default
   html_document:
     theme: cerulean
+date: "10/30/2014"
 ---
 
 <!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
